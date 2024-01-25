@@ -179,7 +179,7 @@ const Haritalar = ({navigation, route}) => {
             ? {display: 'none'}
             : null
           /* Eğer yeterli fotoğraf varsa gösterme, yoksa göster. oldu arkadaşlar
-          kapiyorum ben :D tmam
+          kapiyorum ben :D
           githuba aticam kodlari wp grubunda var linkler
           */
         }

@@ -7,12 +7,13 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 
 const Konumlar = ({navigation, route}) => {
   useEffect(() => {
     navigation.setOptions({
-      title: `Oryantiring - Konumlar - ${route.params.username} kullanıcısı`,
+      title: `Fun-Tring - Konumlar - ${route.params.username} kullanıcısı`,
     });
     fetch('http://100.25.205.61:9491/create_user', {
       method: 'POST',
@@ -24,13 +25,19 @@ const Konumlar = ({navigation, route}) => {
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() =>
-          item.id === 0
-            ? navigation.navigate('Haritalar', {
-                username: route.params.username,
-              })
-            : null
-        }
+        onPress={() => {
+          if (item.id === 0 || item.id === 1) {
+            navigation.navigate('Haritalar', {
+              username: route.params.username,
+              id: item.id,
+            });
+          } else {
+            Alert.alert(
+              'Yakında',
+              `Yakında "${item.label}" bölgesi de eklenecek.`,
+            );
+          }
+        }}
         style={styles.listViewItem}>
         <Image
           source={item.image}
@@ -74,6 +81,12 @@ const Konumlar = ({navigation, route}) => {
             label: 'Efes Antik Kenti',
             image: require('../assets/efes.jpg'),
           },
+
+          {
+            id: 1,
+            label: 'Fuar İzmir',
+            image: require('../assets/fuarizmir.jpeg'),
+          },
           {
             id: 2,
             label: 'Topkapı Sarayı',
@@ -81,7 +94,7 @@ const Konumlar = ({navigation, route}) => {
           },
 
           {
-            id: 1,
+            id: 3,
             label: 'Dolmabahçe Sarayı',
             image: require('../assets/dolmabahce.jpg'),
           },

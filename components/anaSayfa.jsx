@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Image,
   View,
 } from 'react-native';
 
@@ -24,6 +25,13 @@ const AnaSayfa = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Hoş geldiniz!</Text>
+      <Image
+        style={styles.logoStyle}
+        width={200}
+        height={200}
+        resizeMode="contain"
+        source={require('../assets/spicaLogo.png')}
+      />
       <View style={styles.loginItems}>
         <Text>Lütfen kullanıcı adı giriniz:</Text>
         <TextInput
@@ -53,6 +61,11 @@ const styles = StyleSheet.create({
     gap: 12,
     margin: 12,
   },
+  logoStyle: {
+    width: '80%',
+    height: '40%',
+    marginTop: 30,
+  },
   login: {
     backgroundColor: '#ddd',
     borderWidth: 1,
@@ -77,8 +90,8 @@ const styles = StyleSheet.create({
   loginItems: {
     alignItems: 'center',
     flex: 1,
-    gap: 12,
-    justifyContent: 'center',
+    gap: 20,
+    marginTop: 30,
     width: '80%',
   },
 });

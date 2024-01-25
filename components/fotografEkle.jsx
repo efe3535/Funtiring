@@ -15,26 +15,48 @@ const FotografEkle = ({navigation, route}) => {
 
   const handleSendPhoto = async () => {
     const file = await cameraRef.current.takePhoto();
-    await fetch(`file://${file.path}`)
-      .then(result => result.blob())
-      .then(data => {
-        fetch('http://100.25.205.61:9491/image', {
-          method: 'POST',
-          headers: {
-            'Bilsem-Username': route.params.username,
-            'Bilsem-Index': route.params.index,
-          },
-          body: data,
+    if (route.params.place === 0) {
+      await fetch(`file://${file.path}`)
+        .then(result => result.blob())
+        .then(data => {
+          fetch('http://100.25.205.61:9491/image', {
+            method: 'POST',
+            headers: {
+              'Bilsem-Username': route.params.username,
+              'Bilsem-Index': route.params.index,
+            },
+            body: data,
+          });
+        })
+        .then(() => {
+          navigation.navigate('Konumlar', {
+            username: route.params.username,
+          });
         });
-      })
-      .then(() => {
-        navigation.navigate('Konumlar', {username: route.params.username});
-      });
+    } else if (route.params.place === 1) {
+      await fetch(`file://${file.path}`)
+        .then(result => result.blob())
+        .then(data => {
+          fetch('http://100.25.205.61:9491/image2', {
+            method: 'POST',
+            headers: {
+              'Bilsem-Username': route.params.username,
+              'Bilsem-Index': route.params.index,
+            },
+            body: data,
+          });
+        })
+        .then(() => {
+          navigation.navigate('Konumlar', {
+            username: route.params.username,
+          });
+        });
+    }
   };
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Oryantiring - Fotoğraf - ${route.params.username} kullanıcısı`,
+      title: `Fun-Tring - Fotoğraf - ${route.params.username} kullanıcısı`,
     });
     if (!hasPermission) {
       requestPermission();

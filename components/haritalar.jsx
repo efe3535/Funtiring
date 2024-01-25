@@ -6,10 +6,12 @@ import {
   StyleSheet,
   ScrollView,
   FlatList,
+  Alert,
   TouchableOpacity,
   Image,
   Animated,
   Dimensions,
+  Button,
 } from 'react-native';
 
 const Haritalar = ({navigation, route}) => {
@@ -20,7 +22,7 @@ const Haritalar = ({navigation, route}) => {
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
-        title: `Oryantiring - Haritalar - ${route.params.username} kullanıcısı`,
+        title: `Fun-Tring - Haritalar - ${route.params.username} kullanıcısı`,
       });
       fetch('http://100.25.205.61:9491/get_images', {
         method: 'POST',
@@ -30,24 +32,76 @@ const Haritalar = ({navigation, route}) => {
         .then(res => res.json())
         .then(res => {
           let temp = [];
-          setImagesList(
-            res.images
-              .map((item, ind) => {
-                if (item) {
-                  temp.push(ind);
-                  return res.prefix + item;
-                } else {
-                  return null;
-                }
-              })
-              .filter(item => item),
-          );
-          setAddedIndexes(temp);
+          if (route.params.id === 0) {
+            setImagesList(
+              res.images
+                .map((item, ind) => {
+                  if (item) {
+                    temp.push(ind);
+                    return res.prefix + item;
+                  } else {
+                    return null;
+                  }
+                })
+                .filter(item => item),
+            );
+            setAddedIndexes(temp);
+          } else if (route.params.id === 1) {
+            setImagesList(
+              res.images2
+                .map((item, ind) => {
+                  if (item) {
+                    temp.push(ind);
+                    return res.prefix + item;
+                  } else {
+                    return null;
+                  }
+                })
+                .filter(item => item),
+            );
+            setAddedIndexes(temp);
+          }
         })
         .catch(console.err);
       setExtraData(true);
-    }, [navigation, route.params.username]),
+    }, [navigation, route.params.username, route.params.id]),
   );
+
+  const sendDelete = id => {
+    fetch('http://100.25.205.61:9491/delete', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        user: route.params.username,
+        id,
+        place: route.params.id,
+      }),
+    }).catch(console.err);
+  };
+
+  const confirmDelete = id => {
+    Alert.alert(
+      'Emin misiniz?',
+      'Fotoğrafınız sonsuza kadar kaybolacak. Bu işlem geri alınamaz.',
+      [
+        {
+          text: 'Evet',
+          onPress: () => {
+            sendDelete(id);
+            navigation.navigate('Konumlar', {username: route.params.username});
+          },
+          style: 'default',
+        },
+        {
+          text: 'İptal',
+          onPress: () => {
+            Alert.alert('', 'Fotoğraf silinmemiştir.');
+          },
+          style: 'cancel',
+        },
+      ],
+    );
+  };
 
   const renderItem = ({item, index}) => {
     return (
@@ -57,6 +111,16 @@ const Haritalar = ({navigation, route}) => {
           {route.params.username} kullanıcısından {addedIndexes[index] + 1}{' '}
           numaralı fotoğraf
         </Text>
+        <TouchableOpacity
+          onPress={() => {
+            confirmDelete(addedIndexes[index]);
+          }}
+          style={styles.deleteStyle}>
+          <Image
+            style={styles.copKutusu}
+            source={require('../assets/copKutusu.png')}
+          />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -65,10 +129,11 @@ const Haritalar = ({navigation, route}) => {
     navigation.navigate('FotografEkle', {
       username: route.params.username,
       index: id,
+      place: route.params.id,
     });
   };
 
-  const FooterComponentArray = [...Array(10).keys()]
+  /*const FooterComponentArray = [...Array(route.params.id === 0 ? 10 : 5).keys()]
     .map(ind => (
       <TouchableOpacity
         style={styles.footerComponent}
@@ -77,8 +142,21 @@ const Haritalar = ({navigation, route}) => {
         <Text>{ind + 1}. resmi ekle</Text>
       </TouchableOpacity>
     ))
-    .filter((item, ind) => !addedIndexes.includes(ind));
-
+    .filter((item, ind) => !addedIndexes.includes(ind));*/
+  /*const FooterComponentArray = (
+    <TouchableOpacity
+      style={styles.footerComponent}
+      onPress={() => handlePhoto()}>
+      <Text>{ind + 1}. resmi ekle</Text>
+    </TouchableOpacity>
+  );*/
+  const FooterComponent = (
+    <TouchableOpacity
+      style={styles.footerComponent}
+      onPress={() => handlePhoto(addedIndexes.length)}>
+      <Text>{addedIndexes.length + 1}. resmi ekle</Text>
+    </TouchableOpacity>
+  );
   return (
     <View>
       <FlatList
@@ -94,7 +172,17 @@ const Haritalar = ({navigation, route}) => {
             />
           </ScrollView>
         }
-        ListFooterComponent={<View>{FooterComponentArray}</View>}
+        ListFooterComponent={FooterComponent}
+        ListFooterComponentStyle={
+          (route.params.id === 0 && addedIndexes.length === 10) ||
+          (route.params.id === 1 && addedIndexes.length === 5)
+            ? {display: 'none'}
+            : null
+          /* Eğer yeterli fotoğraf varsa gösterme, yoksa göster. oldu arkadaşlar
+          kapiyorum ben :D tmam
+          githuba aticam kodlari wp grubunda var linkler
+          */
+        }
         data={imagesList}
         extraData={extraData}
         renderItem={renderItem}
@@ -109,6 +197,13 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
     marginTop: 12,
+  },
+  deleteStyle: {
+    padding: 12,
+  },
+  copKutusu: {
+    width: 32,
+    height: 32,
   },
   contentContainer: {
     alignItems: 'center',

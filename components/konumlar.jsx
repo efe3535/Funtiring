@@ -13,9 +13,9 @@ import {
 const Konumlar = ({navigation, route}) => {
   useEffect(() => {
     navigation.setOptions({
-      title: `Fun-Tring - Konumlar - ${route.params.username} kullanıcısı`,
+      title: `Fun-teering - Konumlar - ${route.params.username} kullanıcısı`,
     });
-    fetch('http://100.25.205.61:9491/create_user', {
+    fetch('http://3.84.53.159:9491/create_user', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({user: route.params.username}),

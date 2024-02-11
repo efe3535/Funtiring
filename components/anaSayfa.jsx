@@ -16,7 +16,7 @@ const AnaSayfa = ({navigation}) => {
 
   const handleLogin = () => {
     if (text.length > 1) {
-      navigation.navigate('Konumlar', {username: text});
+      navigation.navigate('Konumlar', {username: text.trim()});
     } else {
       Alert.alert('Hata', 'Lütfen geçerli bir kullanıcı adı girin.');
     }
@@ -33,10 +33,10 @@ const AnaSayfa = ({navigation}) => {
         source={require('../assets/spicaLogo.png')}
       />
       <View style={styles.loginItems}>
-        <Text>Lütfen kullanıcı adı giriniz:</Text>
+        <Text style={styles.text}>Adınız ve soyadınızı giriniz</Text>
         <TextInput
           placeholderTextColor={'#777'}
-          placeholder="Kullanıcı adınız"
+          placeholder="Adınız ve soyadınızı giriniz"
           value={text}
           onChangeText={t => setText(t)}
           style={styles.login}
@@ -44,8 +44,9 @@ const AnaSayfa = ({navigation}) => {
           autoCapitalize="none"
           autoComplete="off"
         />
+
         <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text>Giriş</Text>
+          <Text style={styles.text}>Giriş</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -93,6 +94,9 @@ const styles = StyleSheet.create({
     gap: 20,
     marginTop: 30,
     width: '80%',
+  },
+  text: {
+    color: 'black',
   },
 });
 

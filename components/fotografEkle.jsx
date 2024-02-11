@@ -19,7 +19,7 @@ const FotografEkle = ({navigation, route}) => {
       await fetch(`file://${file.path}`)
         .then(result => result.blob())
         .then(data => {
-          fetch('http://100.25.205.61:9491/image', {
+          fetch('http://3.84.53.159:9491/image', {
             method: 'POST',
             headers: {
               'Bilsem-Username': route.params.username,
@@ -37,7 +37,7 @@ const FotografEkle = ({navigation, route}) => {
       await fetch(`file://${file.path}`)
         .then(result => result.blob())
         .then(data => {
-          fetch('http://100.25.205.61:9491/image2', {
+          fetch('http://3.84.53.159:9491/image2', {
             method: 'POST',
             headers: {
               'Bilsem-Username': route.params.username,
@@ -56,7 +56,7 @@ const FotografEkle = ({navigation, route}) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Fun-Tring - Fotoğraf - ${route.params.username} kullanıcısı`,
+      title: `Fun-teering - Fotoğraf - ${route.params.username} kullanıcısı`,
     });
     if (!hasPermission) {
       requestPermission();
@@ -72,9 +72,16 @@ const FotografEkle = ({navigation, route}) => {
         isActive={true}
         photo
       />
-      <TouchableOpacity style={styles.buttonStyle} onPress={handleSendPhoto}>
-        <Text style={styles.buttonTextStyle}>Fotoğraf çek</Text>
-      </TouchableOpacity>
+      <View style={styles.sideBySide}>
+        <TouchableOpacity style={styles.buttonStyle2} onPress={handleSendPhoto}>
+          <Text style={styles.buttonTextStyle}>Fotoğraf çek</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonStyle2}
+          onPress={() => setOnKamera(!onKamera)}>
+          <Text style={styles.buttonTextStyle}>Kamerayı değiştir</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -94,6 +101,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 6,
   },
+  buttonStyle2: {
+    backgroundColor: '#ddd',
+    padding: 16,
+    width: '40%',
+    alignItems: 'center',
+    borderRadius: 6,
+  },
   buttonTextStyle: {
     color: 'black',
     fontWeight: '600',
@@ -102,6 +116,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
+  },
+  sideBySide: {
+    flexDirection: 'row',
+    gap: 12,
   },
   camera: {
     width: '90%',

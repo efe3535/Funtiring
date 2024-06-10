@@ -22,15 +22,14 @@ const FotografEkle = ({navigation, route}) => {
           fetch('http://3.84.53.159:9491/image', {
             method: 'POST',
             headers: {
-              'Bilsem-Username': route.params.username,
+              'Bilsem-Username': route.params.user,
               'Bilsem-Index': route.params.index,
             },
             body: data,
-          });
-        })
-        .then(() => {
-          navigation.navigate('Konumlar', {
-            username: route.params.username,
+          }).then(() => {
+            navigation.navigate('Konumlar', {
+              user: route.params.user,
+            });
           });
         });
     } else if (route.params.place === 1) {
@@ -40,15 +39,14 @@ const FotografEkle = ({navigation, route}) => {
           fetch('http://3.84.53.159:9491/image2', {
             method: 'POST',
             headers: {
-              'Bilsem-Username': route.params.username,
+              'Bilsem-Username': route.params.user,
               'Bilsem-Index': route.params.index,
             },
             body: data,
-          });
-        })
-        .then(() => {
-          navigation.navigate('Konumlar', {
-            username: route.params.username,
+          }).then(() => {
+            navigation.navigate('Konumlar', {
+              user: route.params.user,
+            });
           });
         });
     }
@@ -56,12 +54,12 @@ const FotografEkle = ({navigation, route}) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Fun-teering - Fotoğraf - ${route.params.username} kullanıcısı`,
+      title: `Funtiring - Fotoğraf - ${route.params.user} kullanıcısı`,
     });
     if (!hasPermission) {
       requestPermission();
     }
-  }, [navigation, route.params.username, hasPermission, requestPermission]);
+  }, [navigation, route.params.user, hasPermission, requestPermission]);
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Fotoğraf ekle</Text>

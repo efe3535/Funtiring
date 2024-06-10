@@ -37,6 +37,7 @@ const UserList = props => {
           'Bir hakem ile fotoğraf çekinin.',
           'Robot deneme masası ile fotoğraf çekinin.',
           'Anı fotoğraf noktasında fotoğraf çekinin.',
+          'Bir jüri ile fotoğraf çekinin.',
         ];
   let fullAciklama =
     props.id === 0
@@ -58,9 +59,9 @@ const UserList = props => {
           'Bir hakem ile fotoğraf çekinin.',
           'Robot deneme masası ile fotoğraf çekinin.',
           'Anı fotoğraf noktasında fotoğraf çekinin.',
+          'Bir jüri ile fotoğraf çekinin.',
         ];
   const renderItem = ({item, index}) => {
-    console.log(item);
     return (
       <View style={{alignItems: 'center', gap: 10}}>
         <Text
@@ -73,7 +74,7 @@ const UserList = props => {
         <View style={styles.renderItem}>
           <Image source={{uri: item}} style={styles.imageStyle} />
           <Text style={styles.text}>
-            {props.username} kullanıcısından {props.addedIndexes[index] + 1}{' '}
+            {props.user} kullanıcısından {props.addedIndexes[index] + 1}{' '}
             numaralı fotoğraf
           </Text>
           <TouchableOpacity
@@ -96,7 +97,7 @@ const UserList = props => {
 
   const handlePhoto = id => {
     props.navigation.navigate('FotografEkle', {
-      username: props.username,
+      user: props.user,
       index: id,
       place: props.id,
     });
@@ -106,7 +107,7 @@ const UserList = props => {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        user: props.username,
+        user: props.user,
         id,
         place: props.id,
       }),
@@ -122,7 +123,7 @@ const UserList = props => {
           onPress: () => {
             sendDelete(id);
             props.navigation.navigate('Konumlar', {
-              username: props.username,
+              user: props.user,
               id: props.id,
             });
           },
@@ -205,7 +206,7 @@ const UserList = props => {
       ListFooterComponent={FooterComponent}
       ListFooterComponentStyle={
         (props.id === 0 && props.addedIndexes.length === 10) ||
-        (props.id === 1 && props.addedIndexes.length === 5)
+        (props.id === 1 && props.addedIndexes.length === 6)
           ? {display: 'none'}
           : null
         /* Eğer yeterli fotoğraf varsa gösterme, yoksa göster. oldu arkadaşlar
@@ -297,7 +298,7 @@ const AdminList = props => {
       <View style={styles.renderItem}>
         <Image source={{uri: item}} style={styles.imageStyle} />
         <Text style={styles.text}>
-          {props.username} kullanıcısından {props.addedIndexes[index] + 1}{' '}
+          {props.user} kullanıcısından {props.addedIndexes[index] + 1}{' '}
           numaralı fotoğraf
         </Text>
         <TouchableOpacity
@@ -319,7 +320,7 @@ const AdminList = props => {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        user: props.username,
+        user: props.user,
         id,
         place: props.id,
       }),
@@ -334,7 +335,7 @@ const AdminList = props => {
           text: 'Evet',
           onPress: () => {
             sendDelete(id);
-            props.navigation.navigate('Konumlar', {username: props.username});
+            props.navigation.navigate('Konumlar', {user: props.user});
           },
           style: 'default',
         },
@@ -370,17 +371,31 @@ const Haritalar = ({navigation, route}) => {
   const [extraData, setExtraData] = useState(false);
   const [addedIndexes, setAddedIndexes] = useState([]);
 
-  const [admin, setAdmin] = useState(route.params.username === 'admin');
+  const [admin, setAdmin] = useState(route.params.user === 'admin');
 
   useFocusEffect(
     useCallback(() => {
+      if (
+        (addedIndexes.length === 10 && route.params.id === 0) ||
+        (addedIndexes.length === 6 && route.params.id === 1)
+      ) {
+        fetch('http://3.84.53.159:9491/completedmap', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            user: route.params.user,
+            mapId: route.params.id,
+          }),
+        });
+      }
+
       navigation.setOptions({
-        title: `Fun-teering - Haritalar - ${route.params.username} kullanıcısı`,
+        title: `Funtiring - Haritalar - ${route.params.user} kullanıcısı`,
       });
       fetch('http://3.84.53.159:9491/get_images', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({user: route.params.username}),
+        body: JSON.stringify({user: route.params.user}),
       })
         .then(res => res.json())
         .then(res => {
@@ -417,7 +432,7 @@ const Haritalar = ({navigation, route}) => {
         })
         .catch(console.err);
       setExtraData(true);
-    }, [navigation, route.params.username, route.params.id]),
+    }, [navigation, route.params.user, route.params.id, addedIndexes.length]),
   );
 
   return (
@@ -425,7 +440,7 @@ const Haritalar = ({navigation, route}) => {
       {admin ? (
         <AdminList
           navigation={navigation}
-          username={route.params.username}
+          user={route.params.user}
           id={route.params.id}
           addedIndexes={addedIndexes}
           imagesList={imagesList}
@@ -434,7 +449,7 @@ const Haritalar = ({navigation, route}) => {
       ) : (
         <UserList
           navigation={navigation}
-          username={route.params.username}
+          user={route.params.user}
           id={route.params.id}
           addedIndexes={addedIndexes}
           imagesList={imagesList}

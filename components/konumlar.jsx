@@ -13,14 +13,9 @@ import {
 const Konumlar = ({navigation, route}) => {
   useEffect(() => {
     navigation.setOptions({
-      title: `Fun-teering - Konumlar - ${route.params.username} kullanıcısı`,
+      title: `Funtiring - Konumlar - ${route.params.user} kullanıcısı`,
     });
-    fetch('http://3.84.53.159:9491/create_user', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({user: route.params.username}),
-    });
-  }, [navigation, route.params.username]);
+  }, [navigation, route.params.user]);
 
   const renderItem = ({item}) => {
     return (
@@ -28,7 +23,7 @@ const Konumlar = ({navigation, route}) => {
         onPress={() => {
           if (item.id === 0 || item.id === 1) {
             navigation.navigate('Haritalar', {
-              username: route.params.username,
+              user: route.params.user,
               id: item.id,
             });
           } else {
@@ -59,6 +54,21 @@ const Konumlar = ({navigation, route}) => {
     return <Text style={styles.header}>Konumların listesi</Text>;
   };
 
+  const handleCommunity = () => {
+    navigation.navigate('Community', {user: route.params.user});
+  };
+
+  const listFooterComponent = () => {
+    return (
+      <View style={styles.buttonContainer}>
+        <Text style={styles.header}>Topluluk</Text>
+        <TouchableOpacity onPress={handleCommunity} style={styles.button}>
+          <Text style={styles.text}>Topluluğa giriş yap</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   const listEmptyComponent = () => {
     return (
       <Text style={styles.header}>
@@ -74,6 +84,8 @@ const Konumlar = ({navigation, route}) => {
         ListEmptyComponent={listEmptyComponent}
         ListHeaderComponent={listHeaderComponent}
         ListHeaderComponentStyle={styles.headerContainer}
+        ListFooterComponent={listFooterComponent}
+        ListFooterComponentStyle={styles.listFooterComponent}
         ItemSeparatorComponent={separatorComponent}
         data={[
           {
@@ -81,22 +93,48 @@ const Konumlar = ({navigation, route}) => {
             label: 'Efes Antik Kenti',
             image: require('../assets/efes.jpg'),
           },
-
-          {
-            id: 1,
-            label: 'Fuar İzmir',
-            image: require('../assets/fuarizmir.jpeg'),
-          },
           {
             id: 2,
-            label: 'Topkapı Sarayı',
-            image: require('../assets/topkapi-sarayi-muzesi.jpg'),
+            label: 'Aigai Antik Kenti',
+            image: {
+              uri: 'https://arkeofili.com/wp-content/uploads/2019/08/aigai.jpg',
+            },
           },
 
           {
             id: 3,
-            label: 'Dolmabahçe Sarayı',
-            image: require('../assets/dolmabahce.jpg'),
+            label: 'Aizanoi Antik Kenti',
+            image: {
+              uri: 'https://arkeofili.com/wp-content/uploads/2019/08/aizanoi.jpg',
+            },
+          },
+          {
+            id: 4,
+            label: 'Aktopraklık Höyük',
+            image: {
+              uri: 'https://arkeofili.com/wp-content/uploads/2019/08/aktoprak.jpg',
+            },
+          },
+          {
+            id: 5,
+            label: 'Alacahöyük',
+            image: {
+              uri: 'https://arkeofili.com/wp-content/uploads/2019/08/Alacahoyuk.jpg',
+            },
+          },
+          {
+            id: 6,
+            label: 'Anavarza Antik Kenti',
+            image: {
+              uri: 'https://arkeofili.com/wp-content/uploads/2019/08/anavarza.jpg',
+            },
+          },
+          {
+            id: 7,
+            label: 'Anemurium Antik Kenti',
+            image: {
+              uri: 'https://arkeofili.com/wp-content/uploads/2019/08/Anemuriumjpg.jpg',
+            },
           },
         ]}
         renderItem={renderItem}
@@ -114,11 +152,31 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 12,
   },
+  buttonContainer: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  button: {
+    backgroundColor: '#d9d9d9',
+    alignSelf: 'center',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 8,
+  },
   listViewItem: {
     backgroundColor: '#d9d9d9',
     flexDirection: 'row',
     borderRadius: 12,
   },
+
+  text: {
+    color: 'black',
+  },
+  listFooterComponent: {
+    alignItems: 'center',
+    padding: 8,
+  },
+
   imageStyle: {
     width: '45%',
     height: 100,

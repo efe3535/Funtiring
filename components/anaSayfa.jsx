@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 
 import {
   Text,
-  SafeAreaView,
+  ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -13,58 +13,84 @@ import {
 
 const AnaSayfa = ({navigation}) => {
   const [text, setText] = useState('');
+  const [pass, setPass] = useState('');
 
-  const handleLogin = () => {
-    if (text.length > 1) {
-      navigation.navigate('Konumlar', {username: text.trim()});
+  const checkPass = () => {
+    return fetch('http://3.84.53.159:9491/checkpass', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({user: text, pass}),
+    })
+      .then(res => res.json())
+      .then(res => res.success)
+      .then(success => {
+        return success;
+      });
+  };
+
+  const handleLogin = async () => {
+    if (await checkPass()) {
+      navigation.navigate('Konumlar', {user: text.trim()});
     } else {
-      Alert.alert('Hata', 'Lütfen geçerli bir kullanıcı adı girin.');
+      Alert.alert('Hata', 'Kullanıcı adı veya şifre yanlış.');
     }
   };
 
+  const handleRegister = () => {
+    navigation.navigate('Kayit');
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}>
       <Text style={styles.header}>Hoş geldiniz!</Text>
-      <Image
-        style={styles.logoStyle}
-        width={200}
-        height={200}
-        resizeMode="contain"
-        source={require('../assets/spicaLogo.png')}
-      />
+
       <View style={styles.loginItems}>
-        <Text style={styles.text}>Adınız ve soyadınızı giriniz</Text>
+        <Text style={styles.text}>Bilgilerinizi giriniz...</Text>
         <TextInput
           placeholderTextColor={'#777'}
-          placeholder="Adınız ve soyadınızı giriniz"
+          placeholder="E-Mail"
           value={text}
+          keyboardType="email-address"
           onChangeText={t => setText(t)}
           style={styles.login}
           autoCorrect={false}
           autoCapitalize="none"
           autoComplete="off"
         />
-
+        <TextInput
+          placeholderTextColor={'#777'}
+          placeholder="Şifre"
+          value={pass}
+          secureTextEntry
+          onChangeText={t => setPass(t)}
+          style={styles.login}
+          autoCorrect={false}
+          autoCapitalize="none"
+          autoComplete="off"
+        />
         <TouchableOpacity onPress={handleLogin} style={styles.button}>
           <Text style={styles.text}>Giriş</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={handleRegister} style={styles.button}>
+          <Text style={styles.text}>Kayıt</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container: {},
+  contentContainer: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#eee',
-    flex: 1,
-    gap: 12,
-    margin: 12,
+    position: 'absolute',
+    top: '25%',
+    width: '100%',
   },
   logoStyle: {
-    width: '80%',
-    height: '40%',
+    height: '20%',
     marginTop: 30,
   },
   login: {
@@ -77,8 +103,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#ccc',
-    padding: 12,
-    paddingHorizontal: 24,
+    height: 40,
+    justifyContent: 'center',
     borderRadius: 6,
     width: '60%',
     alignItems: 'center',
@@ -94,6 +120,7 @@ const styles = StyleSheet.create({
     gap: 20,
     marginTop: 30,
     width: '80%',
+    paddingBottom: '50%',
   },
   text: {
     color: 'black',
